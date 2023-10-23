@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.id_generator.IdGenerator;
-import ru.practicum.shareit.item.exception.ItemAlreadyExistsException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
@@ -23,13 +22,10 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public Item createItem(Item item) {
-        if (idToItem.containsKey(item.getId())) {
-            throw new ItemAlreadyExistsException(String.format("Item with id: %d already exists", item.getId()));
-        }
         int id = idGenerator.generateId();
         item.setId(id);
         idToItem.put(id, item);
-        log.info("New item added to storage: {}", item);
+        log.info("New item with id: {} added to storage: {}", item.getId(), item);
         return item;
     }
 
@@ -45,7 +41,7 @@ public class InMemoryItemStorage implements ItemStorage {
         }
         updateItemFields(itemFromStorage, item);
         idToItem.put(item.getId(), itemFromStorage);
-        log.info("Item was updated in storage: {}", itemFromStorage);
+        log.info("Item with id: {} was updated in storage: {}", itemFromStorage.getId(), itemFromStorage);
         return itemFromStorage;
     }
 

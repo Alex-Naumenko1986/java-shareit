@@ -25,27 +25,24 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User createUser(User user) {
-        if (idToUser.containsKey(user.getId())) {
-            throw new UserAlreadyExistsException(String.format("User with id: %d already exists", user.getId()));
-        }
         checkEmailAlreadyExists(user);
         int id = idGenerator.generateId();
         user.setId(id);
         idToUser.put(id, user);
-        log.info("New user was created: {}", user);
+        log.info("New user with id: {} was created: {}", user.getId(), user);
         return user;
     }
 
     @Override
     public User updateUser(User user) {
+        checkEmailAlreadyExists(user);
         if (!idToUser.containsKey(user.getId())) {
             throw new UserNotFoundException(String.format("User with id: %d does not exist", user.getId()));
         }
         User userFromStorage = idToUser.get(user.getId());
-        checkEmailAlreadyExists(user);
         updateUserFields(userFromStorage, user);
         idToUser.replace(userFromStorage.getId(), userFromStorage);
-        log.info("User was updated: {}", userFromStorage);
+        log.info("User with id: {} was updated: {}", userFromStorage.getId(), userFromStorage);
         return userFromStorage;
     }
 
@@ -59,7 +56,11 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void deleteUser(int id) {
+        if (!idToUser.containsKey(id)) {
+            throw new UserNotFoundException(String.format("User with id: %d does not exist", id));
+        }
         idToUser.remove(id);
+        log.info("User with id: {} was removed from storage", id);
     }
 
     private void checkEmailAlreadyExists(User user) {

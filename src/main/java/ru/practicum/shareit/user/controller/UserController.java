@@ -29,7 +29,7 @@ public class UserController {
     public UserDto createUser(@RequestBody @Valid UserDto userDto) {
         User user = userService.createUser(userMapper.toUser(userDto));
         UserDto createdUserDto = userMapper.toUserDto(user);
-        log.info("Created new user: {}", createdUserDto);
+        log.info("Created new user with id:{}, {}", createdUserDto.getId(), createdUserDto);
         return createdUserDto;
     }
 
@@ -38,7 +38,7 @@ public class UserController {
         userDto.setId(id);
         User user = userService.updateUser(userMapper.toUser(userDto));
         UserDto updatedUserDto = userMapper.toUserDto(user);
-        log.info("Updated user: {}", updatedUserDto);
+        log.info("Updated user with id:{}, {}", updatedUserDto.getId(), updatedUserDto);
         return updatedUserDto;
     }
 

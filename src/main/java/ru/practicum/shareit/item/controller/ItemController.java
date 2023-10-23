@@ -25,7 +25,8 @@ public class ItemController {
         Item item = itemMapper.toItem(itemDto);
         item.setOwnerId(userId);
         ItemDto createdItemDto = itemMapper.toItemDto(itemService.createItem(item));
-        log.info("Created new item {}", createdItemDto);
+        log.info("Created new item with id: {} by the owner with id: {}, {}", createdItemDto.getId(), userId,
+                createdItemDto);
         return createdItemDto;
     }
 
@@ -35,7 +36,8 @@ public class ItemController {
         itemDto.setId(itemId);
         Item item = itemMapper.toItem(itemDto);
         ItemDto updatedItemDto = itemMapper.toItemDto(itemService.updateItem(userId, item));
-        log.info("Updated item: {}", updatedItemDto);
+        log.info("Updated item with id: {} by the owner with id: {}, {}", updatedItemDto.getId(), userId,
+                updatedItemDto);
         return updatedItemDto;
     }
 
