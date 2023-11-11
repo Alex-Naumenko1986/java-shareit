@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto userDto) {
         UserEntity userEntity = userMapper.toEntity(userDto);
         userEntity = userStorage.save(userEntity);
-        log.info("New user was created in database: {}", userEntity)
+        log.info("New user was created in database: {}", userEntity);
         return userMapper.toDto(userEntity);
     }
 
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
                         userEntityUpdated.getId())));
         updateUserFields(userEntity, userEntityUpdated);
         userEntity = userStorage.save(userEntity);
-        log.info("User was updated in database: {}", userEntity)
+        log.info("User was updated in database: {}", userEntity);
         return userMapper.toDto(userEntity);
     }
 
