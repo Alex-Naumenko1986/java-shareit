@@ -74,8 +74,8 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public List<BookingDto> getUsersBookings(Integer userId, String state) {
         userStorage.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found"
-                        , userId)));
+                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found",
+                        userId)));
 
         State requestState;
         LocalDateTime now = LocalDateTime.now();
@@ -91,8 +91,8 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingStorage.findByBooker_IdOrderByStartDesc(userId);
                 break;
             case CURRENT:
-                bookings = bookingStorage.findByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc
-                        (userId, now, now);
+                bookings = bookingStorage.findByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(
+                        userId, now, now);
                 break;
             case PAST:
                 bookings = bookingStorage.findByBooker_IdAndEndBeforeOrderByStartDesc(userId, now);
@@ -116,8 +116,8 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public List<BookingDto> getOwnersBookings(Integer userId, String state) {
         userStorage.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found"
-                        , userId)));
+                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found",
+                        userId)));
 
         State requestState;
         LocalDateTime now = LocalDateTime.now();
@@ -159,8 +159,8 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingDto getBooking(Integer userId, Integer bookingId) {
         userStorage.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found"
-                        , userId)));
+                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found",
+                        userId)));
 
         BookingEntity booking = bookingStorage.findById(bookingId).orElseThrow(() ->
                 new BookingNotFoundException(String.format("Booking with id %d was not found", bookingId)));

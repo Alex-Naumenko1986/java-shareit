@@ -38,8 +38,8 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(UserDto userDto) {
         UserEntity userEntityUpdated = userMapper.toEntity(userDto);
         UserEntity userEntity = userStorage.findById(userEntityUpdated.getId())
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found"
-                        , userEntityUpdated.getId())));
+                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found",
+                        userEntityUpdated.getId())));
         updateUserFields(userEntity, userEntityUpdated);
         userEntity = userStorage.save(userEntity);
         return userMapper.toDto(userEntity);

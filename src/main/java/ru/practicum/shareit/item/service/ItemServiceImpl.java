@@ -47,8 +47,8 @@ public class ItemServiceImpl implements ItemService {
         ItemEntity itemEntity = itemMapper.toEntity(itemDto);
         itemEntity.setOwnerId(ownerId);
         userStorage.findById(itemEntity.getOwnerId())
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found"
-                        , ownerId)));
+                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found",
+                        ownerId)));
         itemEntity = itemStorage.save(itemEntity);
         log.info("New item was added to database: {}", itemEntity);
         return itemMapper.toDto(itemEntity);
@@ -59,11 +59,11 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto updateItem(int userId, ItemDto itemDto) {
         ItemEntity itemEntityUpdated = itemMapper.toEntity(itemDto);
         userStorage.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found"
-                        , userId)));
+                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found",
+                        userId)));
         ItemEntity itemEntity = itemStorage.findById(itemEntityUpdated.getId())
-                .orElseThrow(() -> new ItemNotFoundException(String.format("Item with id %d was not found"
-                        , itemEntityUpdated.getId())));
+                .orElseThrow(() -> new ItemNotFoundException(String.format("Item with id %d was not found",
+                        itemEntityUpdated.getId())));
         if (itemEntity.getOwnerId() != userId) {
             throw new UnsupportedOperationException(String.format("User with id: %d is not owner of the item " +
                     "with id: %d", userId, itemEntity.getId()));
@@ -80,13 +80,13 @@ public class ItemServiceImpl implements ItemService {
         ItemEntity itemEntity = itemStorage.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException(String.format("Item with id %d was not found", itemId)));
         userStorage.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found"
-                        , userId)));
+                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found",
+                        userId)));
         ItemDto itemDto = itemMapper.toDto(itemEntity);
         if (itemEntity.getOwnerId() == userId) {
             LocalDateTime now = LocalDateTime.now();
-            List<BookingEntity> bookings = bookingStorage.findByItem_IdAndStatusNotIn
-                    (itemId, List.of(BookingStatus.REJECTED, BookingStatus.CANCELED));
+            List<BookingEntity> bookings = bookingStorage.findByItem_IdAndStatusNotIn(
+                    itemId, List.of(BookingStatus.REJECTED, BookingStatus.CANCELED));
 
             bookings.stream().filter(bookingEntity ->
                             bookingEntity.getStart().isBefore(now)).max(Comparator.comparing(BookingEntity::getEnd))
@@ -109,8 +109,8 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public List<ItemDto> getOwnersItems(int ownerId) {
         userStorage.findById(ownerId)
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found"
-                        , ownerId)));
+                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found",
+                        ownerId)));
         List<ItemEntity> itemEntities = itemStorage.findByOwnerId(ownerId);
 
         List<ItemDto> itemDtos = itemEntities.stream().map(itemMapper::toDto).collect(Collectors.toList());
@@ -156,11 +156,11 @@ public class ItemServiceImpl implements ItemService {
         ItemEntity itemEntity = itemStorage.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException(String.format("Item with id %d was not found", itemId)));
         UserEntity userEntity = userStorage.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found"
-                        , userId)));
+                .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found",
+                        userId)));
 
-        List<BookingEntity> bookings = bookingStorage.findByItem_IdAndBooker_IdAndStatusAndEndBefore
-                (itemId, userId, BookingStatus.APPROVED, LocalDateTime.now());
+        List<BookingEntity> bookings = bookingStorage.findByItem_IdAndBooker_IdAndStatusAndEndBefore(
+                itemId, userId, BookingStatus.APPROVED, LocalDateTime.now());
         if (bookings.isEmpty()) {
             throw new IllegalAddCommentOperationException(String.format("User with id: %d can't add comments to " +
                     "item with id: %d. This user didn't book this item", userId, itemId));
