@@ -152,6 +152,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public CommentDto addComment(Integer userId, Integer itemId, CommentDto commentDto) {
         ItemEntity itemEntity = itemStorage.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException(String.format("Item with id %d was not found", itemId)));

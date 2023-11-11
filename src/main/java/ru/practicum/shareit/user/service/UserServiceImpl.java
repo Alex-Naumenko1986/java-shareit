@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
     private final UserMapper userMapper;
@@ -30,6 +32,7 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto userDto) {
         UserEntity userEntity = userMapper.toEntity(userDto);
         userEntity = userStorage.save(userEntity);
+        log.info("New user was created in database: {}", userEntity)
         return userMapper.toDto(userEntity);
     }
 
@@ -42,6 +45,7 @@ public class UserServiceImpl implements UserService {
                         userEntityUpdated.getId())));
         updateUserFields(userEntity, userEntityUpdated);
         userEntity = userStorage.save(userEntity);
+        log.info("User was updated in database: {}", userEntity)
         return userMapper.toDto(userEntity);
     }
 
@@ -59,6 +63,7 @@ public class UserServiceImpl implements UserService {
         userStorage.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found", id)));
         userStorage.deleteById(id);
+        log.info("User with id: {} was deleted from database", id);
     }
 
     private void updateUserFields(UserEntity userEntityFromStorage, UserEntity userEntity) {
