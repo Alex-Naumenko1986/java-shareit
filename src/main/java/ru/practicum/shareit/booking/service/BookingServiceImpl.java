@@ -1,7 +1,9 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.ShortBookingDto;
 import ru.practicum.shareit.booking.exception.*;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookingServiceImpl implements BookingService {
     private final BookingStorage bookingStorage;
     private final UserStorage userStorage;
@@ -33,6 +36,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingMapper bookingMapper;
 
     @Override
+    @Transactional
     public BookingDto createBooking(ShortBookingDto bookingDto) {
         BookingEntity bookingEntity = shortBookingMapper.toEntity(bookingDto);
         checkBookingStartAndEndDate(bookingEntity);
@@ -61,10 +65,13 @@ public class BookingServiceImpl implements BookingService {
 
         bookingEntity = bookingStorage.save(bookingEntity);
 
+        log.info("New booking was created: {}", bookingEntity);
+
         return bookingMapper.toDto(bookingEntity);
     }
 
     @Override
+    @Transactional
     public List<BookingDto> getUsersBookings(Integer userId, String state) {
         userStorage.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found"
@@ -106,6 +113,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public List<BookingDto> getOwnersBookings(Integer userId, String state) {
         userStorage.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found"
@@ -148,6 +156,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto getBooking(Integer userId, Integer bookingId) {
         userStorage.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found"
@@ -166,6 +175,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto approveBooking(Integer userId, Integer bookingId, Boolean isApproved) {
         BookingEntity booking = bookingStorage.findById(bookingId).orElseThrow(() ->
                 new BookingNotFoundException(String.format("Booking with id %d was not found", bookingId)));
@@ -192,6 +202,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         booking = bookingStorage.save(booking);
+        log.info("Status of booking was changed: {}", booking);
         return bookingMapper.toDto(booking);
     }
 

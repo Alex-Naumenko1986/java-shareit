@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -17,7 +16,6 @@ import java.util.List;
 @Slf4j
 public class ItemController {
     private final ItemService itemService;
-    private final ItemMapper itemMapper;
 
     @PostMapping
     public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") int userId, @RequestBody @Valid ItemDto itemDto) {
@@ -56,6 +54,8 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") int userId, @PathVariable("itemId") Integer itemId,
                                  @RequestBody @Valid CommentDto commentDto) {
-        return itemService.addComment(userId, itemId, commentDto);
+        CommentDto addedComment = itemService.addComment(userId, itemId, commentDto);
+        log.info("New comment was added to item with id: {}, comment: {}", itemId, addedComment);
+        return addedComment;
     }
 }

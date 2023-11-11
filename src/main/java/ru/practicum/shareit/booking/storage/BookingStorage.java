@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.storage;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.BookingEntity;
 import ru.practicum.shareit.booking.model.BookingStatus;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+@Repository
 public interface BookingStorage extends JpaRepository<BookingEntity, Integer> {
     List<BookingEntity> findByBooker_IdOrderByStartDesc(Integer id);
 

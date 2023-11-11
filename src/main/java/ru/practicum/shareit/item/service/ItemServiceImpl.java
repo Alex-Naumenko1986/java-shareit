@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.CommentDto;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ItemServiceImpl implements ItemService {
     private final UserStorage userStorage;
     private final ItemStorage itemStorage;
@@ -48,6 +50,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found"
                         , ownerId)));
         itemEntity = itemStorage.save(itemEntity);
+        log.info("New item was added to database: {}", itemEntity);
         return itemMapper.toDto(itemEntity);
     }
 
@@ -67,6 +70,7 @@ public class ItemServiceImpl implements ItemService {
         }
         updateItemFields(itemEntity, itemEntityUpdated);
         itemEntity = itemStorage.save(itemEntity);
+        log.info("Item was updated in database: {}", itemEntity);
         return itemMapper.toDto(itemEntity);
     }
 
@@ -166,6 +170,7 @@ public class ItemServiceImpl implements ItemService {
         commentEntity.setItem(itemEntity);
         commentEntity.setCreated(LocalDateTime.now());
         commentEntity = commentStorage.save(commentEntity);
+        log.info("New comment was added to database: {}", commentEntity);
         return commentMapper.toDto(commentEntity);
     }
 

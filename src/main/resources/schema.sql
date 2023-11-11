@@ -8,7 +8,7 @@ create TABLE IF NOT EXISTS users (
   name VARCHAR(255) NOT NULL,
   email VARCHAR(512) NOT NULL,
   CONSTRAINT pk_user PRIMARY KEY (id),
-  CONSTRAINT UQ_USER_EMAIL UNIQUE (email)
+  CONSTRAINT UQ_USER_EMAIL unique (email)
 );
 
 create TABLE IF NOT EXISTS items (
@@ -46,6 +46,6 @@ create TABLE IF NOT EXISTS comments (
      CONSTRAINT pk_comments PRIMARY KEY (id),
      CONSTRAINT fk_author_id FOREIGN KEY(author_id)
      REFERENCES users(id),
-     CONSTRAINT fk_item_id FOREIGN KEY(item_id)
+     CONSTRAINT fk_item_id_comments FOREIGN KEY(item_id)
      REFERENCES items(id)
 )
