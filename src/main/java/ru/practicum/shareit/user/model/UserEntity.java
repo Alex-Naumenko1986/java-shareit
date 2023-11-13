@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Builder
-@Table(name = "users", schema = "public")
+@Table(name = "users")
 public class UserEntity {
     @Id
     @Column(name = "id")
