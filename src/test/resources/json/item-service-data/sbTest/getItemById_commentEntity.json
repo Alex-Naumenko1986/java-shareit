@@ -1,0 +1,36 @@
+[
+  {
+    "id": 1,
+    "text": "Comment 1",
+    "item": {
+      "id": 1,
+      "name": "Item 1",
+      "description": "Item 1 description",
+      "available": true,
+      "ownerId": 1
+    },
+    "author": {
+      "id": 2,
+      "name": "User 2",
+      "email": "user2@yandex.ru"
+    },
+    "created": "2023-12-01T10:30:00"
+  },
+  {
+    "id": 2,
+    "text": "Comment 2",
+    "item": {
+      "id": 1,
+      "name": "Item 1",
+      "description": "Item 1 description",
+      "available": true,
+      "ownerId": 1
+    },
+    "author": {
+      "id": 2,
+      "name": "User 2",
+      "email": "user2@yandex.ru"
+    },
+    "created": "2023-11-30T10:30:00"
+  }
+]
