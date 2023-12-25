@@ -20,7 +20,6 @@ public class CommentEntity {
     private Integer id;
     @Column(name = "text", nullable = false)
     private String text;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private ItemEntity item;

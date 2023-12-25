@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -14,10 +16,11 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.model.ItemEntity;
-import ru.practicum.shareit.item.storage.db.ItemStorage;
+import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.pageable.CustomPageable;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.UserEntity;
-import ru.practicum.shareit.user.storage.db.UserStorage;
+import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -72,7 +75,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public List<BookingDto> getUsersBookings(Integer userId, String state) {
+    public List<BookingDto> getUsersBookings(Integer userId, String state, int from, int size) {
         userStorage.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found",
                         userId)));
@@ -84,27 +87,31 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             throw new InvalidBookingOperationException(String.format("Unknown state: %s", state));
         }
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
+        Pageable pageable = new CustomPageable(from, size, sort);
+
         List<BookingEntity> bookings;
 
         switch (requestState) {
             case ALL:
-                bookings = bookingStorage.findByBooker_IdOrderByStartDesc(userId);
+                bookings = bookingStorage.findByBooker_Id(userId, pageable);
                 break;
             case CURRENT:
-                bookings = bookingStorage.findByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(
-                        userId, now, now);
+                bookings = bookingStorage.findByBooker_IdAndStartBeforeAndEndAfter(
+                        userId, now, now, pageable);
                 break;
             case PAST:
-                bookings = bookingStorage.findByBooker_IdAndEndBeforeOrderByStartDesc(userId, now);
+                bookings = bookingStorage.findByBooker_IdAndEndBefore(userId, now, pageable);
                 break;
             case FUTURE:
-                bookings = bookingStorage.findByBooker_IdAndStartAfterOrderByStartDesc(userId, now);
+                bookings = bookingStorage.findByBooker_IdAndStartAfter(userId, now, pageable);
                 break;
             case WAITING:
-                bookings = bookingStorage.findByBooker_IdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
+                bookings = bookingStorage.findByBooker_IdAndStatus(userId, BookingStatus.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingStorage.findByBooker_IdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED);
+                bookings = bookingStorage.findByBooker_IdAndStatus(userId, BookingStatus.REJECTED, pageable);
                 break;
             default:
                 bookings = new ArrayList<>();
@@ -114,7 +121,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public List<BookingDto> getOwnersBookings(Integer userId, String state) {
+    public List<BookingDto> getOwnersBookings(Integer userId, String state, int from, int size) {
         userStorage.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found",
                         userId)));
@@ -128,26 +135,29 @@ public class BookingServiceImpl implements BookingService {
             throw new InvalidBookingOperationException(String.format("Unknown state: %s", state));
         }
 
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
+        Pageable pageable = new CustomPageable(from, size, sort);
+
         List<BookingEntity> bookings;
 
         switch (requestState) {
             case ALL:
-                bookings = bookingStorage.findByItem_OwnerIdOrderByStartDesc(userId);
+                bookings = bookingStorage.findByItem_OwnerId(userId, pageable);
                 break;
             case CURRENT:
-                bookings = bookingStorage.findByItem_OwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, now, now);
+                bookings = bookingStorage.findByItem_OwnerIdAndStartBeforeAndEndAfter(userId, now, now, pageable);
                 break;
             case PAST:
-                bookings = bookingStorage.findByItem_OwnerIdAndEndBeforeOrderByStartDesc(userId, now);
+                bookings = bookingStorage.findByItem_OwnerIdAndEndBefore(userId, now, pageable);
                 break;
             case FUTURE:
-                bookings = bookingStorage.findByItem_OwnerIdAndStartAfterOrderByStartDesc(userId, now);
+                bookings = bookingStorage.findByItem_OwnerIdAndStartAfter(userId, now, pageable);
                 break;
             case WAITING:
-                bookings = bookingStorage.findByItem_OwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
+                bookings = bookingStorage.findByItem_OwnerIdAndStatus(userId, BookingStatus.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingStorage.findByItem_OwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED);
+                bookings = bookingStorage.findByItem_OwnerIdAndStatus(userId, BookingStatus.REJECTED, pageable);
                 break;
             default:
                 bookings = new ArrayList<>();
@@ -182,7 +192,7 @@ public class BookingServiceImpl implements BookingService {
         int ownerId = booking.getItem().getOwnerId();
         if (userId != ownerId) {
             throw new InvalidUserApprovesBookingException(String.format("User with id: %d is trying to change status " +
-                    "of booking with id: %d. Operation failed. User is not the owner of item", ownerId, bookingId));
+                    "of booking with id: %d. Operation failed. User is not the owner of item", userId, bookingId));
         }
 
         if (booking.getStatus() != BookingStatus.WAITING) {
@@ -208,28 +218,28 @@ public class BookingServiceImpl implements BookingService {
 
     private void checkBookingStartAndEndDate(BookingEntity bookingEntity) {
         if (bookingEntity.getStart() == null) {
-            throw new InvalidBookingDatesException(String.format("Invalid start time of booking. " +
-                    "Start time is null"));
+            throw new InvalidBookingDatesException("Invalid start time of booking. " +
+                    "Start time is null");
         }
 
         if (bookingEntity.getEnd() == null) {
-            throw new InvalidBookingDatesException(String.format("Invalid end time of booking. " +
-                    "End time is null"));
+            throw new InvalidBookingDatesException("Invalid end time of booking. " +
+                    "End time is null");
         }
 
         if (!bookingEntity.getEnd().isAfter(bookingEntity.getStart())) {
-            throw new InvalidBookingDatesException(String.format("Invalid booking time of booking. " +
-                    "End time should go after start time"));
+            throw new InvalidBookingDatesException("Invalid booking time of booking. " +
+                    "End time should go after start time");
         }
 
         if (bookingEntity.getEnd().isBefore(LocalDateTime.now())) {
-            throw new InvalidBookingDatesException(String.format("Invalid end time of booking. " +
-                    "End time should be after current moment"));
+            throw new InvalidBookingDatesException("Invalid end time of booking. " +
+                    "End time should be after current moment");
         }
 
         if (bookingEntity.getStart().isBefore(LocalDateTime.now())) {
-            throw new InvalidBookingDatesException(String.format("Invalid start time of booking. " +
-                    "Start time should be after current moment", bookingEntity.getId()));
+            throw new InvalidBookingDatesException("Invalid start time of booking. " +
+                    "Start time should be after current moment");
         }
     }
 }

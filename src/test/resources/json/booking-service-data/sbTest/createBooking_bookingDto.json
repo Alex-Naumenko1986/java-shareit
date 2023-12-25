@@ -1,0 +1,17 @@
+{
+  "id": 1,
+  "start": "2024-02-11T10:00:00",
+  "end": "2024-02-13T00:00:00",
+  "status": "WAITING",
+  "item": {
+    "id": 1,
+    "name": "Item 1",
+    "description": "Item 1 description",
+    "available": true
+  },
+  "booker": {
+    "id": 1,
+    "name": "User 1",
+    "email": "user1@yandex.ru"
+  }
+}

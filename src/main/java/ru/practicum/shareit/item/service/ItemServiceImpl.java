@@ -2,13 +2,15 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.dto.CommentDto;
 import ru.practicum.shareit.booking.mapper.BookingInfoMapper;
 import ru.practicum.shareit.booking.model.BookingEntity;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingStorage;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.exception.IllegalAddCommentOperationException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
@@ -16,11 +18,14 @@ import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.CommentEntity;
 import ru.practicum.shareit.item.model.ItemEntity;
-import ru.practicum.shareit.item.storage.db.CommentStorage;
-import ru.practicum.shareit.item.storage.db.ItemStorage;
+import ru.practicum.shareit.item.storage.CommentStorage;
+import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.pageable.CustomPageable;
+import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
+import ru.practicum.shareit.request.storage.ItemRequestStorage;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.UserEntity;
-import ru.practicum.shareit.user.storage.db.UserStorage;
+import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,6 +40,7 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     private final UserStorage userStorage;
     private final ItemStorage itemStorage;
+    private final ItemRequestStorage itemRequestStorage;
     private final CommentStorage commentStorage;
     private final BookingStorage bookingStorage;
     private final ItemMapper itemMapper;
@@ -49,6 +55,14 @@ public class ItemServiceImpl implements ItemService {
         userStorage.findById(itemEntity.getOwnerId())
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found",
                         ownerId)));
+        Integer requestId = itemEntity.getRequestId();
+
+        if (requestId != null) {
+            itemRequestStorage.findById(requestId)
+                    .orElseThrow(() -> new ItemRequestNotFoundException(String.format("Item request with id %d " +
+                            "was not found", requestId)));
+        }
+
         itemEntity = itemStorage.save(itemEntity);
         log.info("New item was added to database: {}", itemEntity);
         return itemMapper.toDto(itemEntity);
@@ -107,11 +121,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public List<ItemDto> getOwnersItems(int ownerId) {
+    public List<ItemDto> getOwnersItems(int ownerId, int from, int size) {
         userStorage.findById(ownerId)
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with id %d was not found",
                         ownerId)));
-        List<ItemEntity> itemEntities = itemStorage.findByOwnerId(ownerId);
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        Pageable pageable = new CustomPageable(from, size, sort);
+        List<ItemEntity> itemEntities = itemStorage.findByOwnerId(ownerId, pageable);
 
         List<ItemDto> itemDtos = itemEntities.stream().map(itemMapper::toDto).collect(Collectors.toList());
         List<BookingEntity> bookings = bookingStorage.findByItem_OwnerId(ownerId);
@@ -138,16 +154,18 @@ public class ItemServiceImpl implements ItemService {
 
             itemDto.setComments(itemComments);
         }
-        return itemDtos.stream().sorted(Comparator.comparing(ItemDto::getId)).collect(Collectors.toList());
+        return itemDtos;
     }
 
     @Override
     @Transactional
-    public List<ItemDto> searchItems(String query) {
+    public List<ItemDto> searchItems(String query, int from, int size) {
         if (query == null || query.isBlank()) {
             return new ArrayList<>();
         }
-        List<ItemEntity> itemEntities = itemStorage.searchItems(query);
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        Pageable pageable = new CustomPageable(from, size, sort);
+        List<ItemEntity> itemEntities = itemStorage.searchItems(query, pageable);
         return itemEntities.stream().map(itemMapper::toDto).collect(Collectors.toList());
     }
 

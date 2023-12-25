@@ -11,11 +11,14 @@ import ru.practicum.shareit.booking.exception.*;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.exception.IllegalAddCommentOperationException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
+import ru.practicum.shareit.pageable.exception.InvalidPageableArgumentException;
+import ru.practicum.shareit.request.controller.ItemRequestController;
+import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
 import ru.practicum.shareit.user.controller.UserController;
-import ru.practicum.shareit.user.exception.UserAlreadyExistsException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
-@RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class, BookingController.class})
+@RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class, BookingController.class,
+        ItemRequestController.class})
 @Slf4j
 public class ErrorHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -44,13 +47,6 @@ public class ErrorHandler {
     public ErrorResponse handleUnsupportedOperationException(UnsupportedOperationException e) {
         log.error("Error occurred. User, who is not the owner of the item, is trying to update the item: {}",
                 e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleUserAlreadyExistsException(UserAlreadyExistsException e) {
-        log.error("Error occurred. User with same e-mail already exists: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
@@ -97,6 +93,21 @@ public class ErrorHandler {
         log.error("Error occurred. Item not found: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler(ItemRequestNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleItemRequestNotFoundException(ItemRequestNotFoundException e) {
+        log.error("Error occurred. Item request not found: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidPageableArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidPageableArgumentException(InvalidPageableArgumentException e) {
+        log.error("Error occurred. Invalid parameters of page request: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

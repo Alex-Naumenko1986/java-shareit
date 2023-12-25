@@ -1,0 +1,14 @@
+{
+  "id": 1,
+  "description": "Description",
+  "created": "2023-12-10T00:00:00",
+  "items": [
+    {
+      "id": 1,
+      "name": "Item 1",
+      "description": "Item 1 description",
+      "available": true,
+      "requestId": 1
+    }
+  ]
+}

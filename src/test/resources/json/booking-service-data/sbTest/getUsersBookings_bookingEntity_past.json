@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "start": "2023-12-11T10:00:00",
+    "end": "2023-12-13T00:00:00",
+    "status": "APPROVED",
+    "item": {
+      "id": 1,
+      "name": "Item 1",
+      "description": "Item 1 description",
+      "available": true,
+      "ownerId": 2
+    },
+    "booker": {
+      "id": 1,
+      "name": "User 1",
+      "email": "user1@yandex.ru"
+    }
+  },
+  {
+    "id": 2,
+    "start": "2023-12-11T10:00:00",
+    "end": "2024-12-18T00:00:00",
+    "status": "APPROVED",
+    "item": {
+      "id": 2,
+      "name": "Item 2",
+      "description": "Item 2 description",
+      "available": true,
+      "ownerId": 2
+    },
+    "booker": {
+      "id": 1,
+      "name": "User 1",
+      "email": "user1@yandex.ru"
+    }
+  }
+]
