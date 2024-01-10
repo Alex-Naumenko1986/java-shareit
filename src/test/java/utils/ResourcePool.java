@@ -139,6 +139,24 @@ public class ResourcePool {
     public static Resource bookingController_getUsersBookings_bookingDto =
             new ClassPathResource("json/booking-controller-data/getUsersBookings_bookingDto.json");
 
+    public static Resource userDto = new ClassPathResource("json/user-dto-data/userDto.json");
+
+    public static Resource itemDto = new ClassPathResource("json/item-dto-data/itemDto.json");
+
+    public static Resource commentDto = new ClassPathResource("json/item-dto-data/commentDto.json");
+
+    public static Resource shortItemDto = new ClassPathResource("json/item-dto-data/shortItemDto.json");
+
+    public static Resource itemRequestDto = new ClassPathResource("json/item-request-dto-data/itemRequestDto.json");
+
+    public static Resource itemResponseDto = new ClassPathResource("json/item-request-dto-data/itemResponseDto.json");
+
+    public static Resource bookingDto = new ClassPathResource("json/booking-dto-data/bookingDto.json");
+
+    public static Resource bookingInfoDto = new ClassPathResource("json/booking-dto-data/bookingInfoDto.json");
+
+    public static Resource shortBookingDto = new ClassPathResource("json/booking-dto-data/shortBookingDto.json");
+
 
     private static ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
     public static final String ERROR_IO = "Ошибка при получении данных из файла-ресурса";
