@@ -14,6 +14,7 @@ import ru.practicum.shareit.user.storage.UserStorage;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 public class ItemStorageTest {
@@ -49,6 +50,7 @@ public class ItemStorageTest {
                 .usingRecursiveComparison()
                 .ignoringFields("id")
                 .isEqualTo(actualItemEntities.get(0));
+        assertNotNull(actualItemEntities.get(0).getId());
     }
 
     @Test
@@ -75,6 +77,6 @@ public class ItemStorageTest {
                 .usingRecursiveComparison()
                 .ignoringFields("id")
                 .isEqualTo(actualItemEntities.get(0));
-
+        assertNotNull(actualItemEntities.get(0).getId());
     }
 }
