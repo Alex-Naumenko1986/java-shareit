@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "start": "2023-11-10T08:14:00",
+    "end": "2024-01-30T08:14:00",
+    "item": {
+      "id": 1,
+      "name": "Item 1",
+      "description": "Item 1 description",
+      "available": true,
+      "ownerId": 1
+    },
+    "booker": {
+      "id": 2,
+      "name": "User 2",
+      "email": "user2@yandex.ru"
+    },
+    "status": "APPROVED"
+  },
+  {
+    "id": 2,
+    "start": "2024-01-30T08:14:00",
+    "end": "2024-02-10T08:14:00",
+    "item": {
+      "id": 1,
+      "name": "Item 1",
+      "description": "Item 1 description",
+      "available": true,
+      "ownerId": 1
+    },
+    "booker": {
+      "id": 2,
+      "name": "User 2",
+      "email": "user2@yandex.ru"
+    },
+    "status": "WAITING"
+  },
+  {
+    "id": 3,
+    "start": "2023-11-10T08:14:00",
+    "end": "2023-11-30T08:14:00",
+    "item": {
+      "id": 2,
+      "name": "Item 2",
+      "description": "Item 2 description",
+      "available": true,
+      "ownerId": 1
+    },
+    "booker": {
+      "id": 2,
+      "name": "User 2",
+      "email": "user2@yandex.ru"
+    },
+    "status": "APPROVED"
+  },
+  {
+    "id": 4,
+    "start": "2024-01-20T08:14:00",
+    "end": "2024-02-20T08:14:00",
+    "item": {
+      "id": 2,
+      "name": "Item 2",
+      "description": "Item 2 description",
+      "available": true,
+      "ownerId": 1
+    },
+    "booker": {
+      "id": 2,
+      "name": "User 2",
+      "email": "user2@yandex.ru"
+    },
+    "status": "WAITING"
+  }
+]
