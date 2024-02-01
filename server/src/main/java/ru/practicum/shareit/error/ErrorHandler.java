@@ -2,7 +2,6 @@ package ru.practicum.shareit.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,18 +16,12 @@ import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
 import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
+import ru.practicum.shareit.request.controller.*;
 
 @RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class, BookingController.class,
         ItemRequestController.class})
 @Slf4j
 public class ErrorHandler {
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(MethodArgumentNotValidException e) {
-        log.error("Error occurred. Validation failed:{}", e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
-
     @ExceptionHandler(InvalidBookingOperationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleInvalidBookingOperationException(InvalidBookingOperationException e) {

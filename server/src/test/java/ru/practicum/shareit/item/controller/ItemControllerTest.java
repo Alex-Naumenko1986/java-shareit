@@ -114,6 +114,30 @@ public class ItemControllerTest {
         verifyNoMoreInteractions(itemService);
     }
 
+    @SneakyThrows
+    @Test
+    void updateItem_shouldThrowExceptionWhenNotOwnerUpdatingItme() {
+        ItemDto updatedItemDtoNoId = ItemDto.builder().name("Item 1 updated").description("Item 1 updated description")
+                .available(true).build();
+        ItemDto updatedItemDto = ItemDto.builder().id(1).name("Item 1 updated")
+                .description("Item 1 updated description").available(true).build();
+        when(itemService.updateItem(1, updatedItemDto))
+                .thenThrow(new UnsupportedOperationException("User with id: 1 is not owner of the item " +
+                        "with id: 1"));
+
+        mockMvc
+                .perform(
+                        MockMvcRequestBuilders.patch("/items/1")
+                                .content(objectMapper.writeValueAsString(updatedItemDtoNoId))
+                                .header("X-Sharer-User-Id", 1)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .characterEncoding(StandardCharsets.UTF_8))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+
+        verify(itemService, Mockito.times(1)).updateItem(1, updatedItemDto);
+        verifyNoMoreInteractions(itemService);
+    }
+
 
     @SneakyThrows
     @Test

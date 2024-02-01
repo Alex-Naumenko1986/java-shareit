@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.ShortBookingDto;
 import ru.practicum.shareit.booking.exception.BookingByOwnerException;
+import ru.practicum.shareit.booking.exception.BookingNotFoundException;
 import ru.practicum.shareit.booking.exception.InvalidBookingOperationException;
 import ru.practicum.shareit.booking.exception.InvalidUserApprovesBookingException;
 import ru.practicum.shareit.booking.service.BookingService;
@@ -155,7 +156,7 @@ public class BookingControllerTest {
     @SneakyThrows
     @Test
     void getBooking_shouldThrowExceptionWhenBookingNotFound() {
-        when(bookingService.getBooking(1, 1)).thenThrow(new BookingByOwnerException("Booking with " +
+        when(bookingService.getBooking(1, 1)).thenThrow(new BookingNotFoundException("Booking with " +
                 "id 1 was not found"));
 
 
